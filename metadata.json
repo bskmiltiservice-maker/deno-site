@@ -1,0 +1,6 @@
+{
+  "name": "Maison Terroir - Sélection Européenne Éthique",
+  "description": "Boutique en affiliation humaniste et transparente. Objets du quotidien et créations durables, expédiés directement par des artisans et ateliers européens de confiance.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
