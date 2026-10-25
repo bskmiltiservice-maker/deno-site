@@ -48,6 +48,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onSelectProduct 
         setReviews(revs);
         setLoading(false);
       }
+    }).catch((err) => {
+      console.warn('Erreur chargement données accueil, passage au secours local:', err);
+      if (active) {
+        setLoading(false);
+      }
     });
     return () => {
       active = false;

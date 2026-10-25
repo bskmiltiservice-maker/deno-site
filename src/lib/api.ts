@@ -67,9 +67,19 @@ function mapDbSupplier(row: any): Supplier {
   };
 }
 
+// Wrap Supabase call with a fast fallback timeout so the UI never blocks or freezes
+function withTimeout<T>(promise: PromiseLike<T>, ms = 1200): Promise<T> {
+  return Promise.race([
+    Promise.resolve(promise),
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error('Supabase request timeout')), ms)
+    ),
+  ]);
+}
+
 export async function getProducts(): Promise<Product[]> {
   try {
-    const { data, error } = await supabase.from('products').select('*');
+    const { data, error } = await withTimeout(supabase.from('products').select('*'));
     if (!error && data && data.length > 0) {
       return data.map(mapDbProduct);
     }
@@ -81,10 +91,9 @@ export async function getProducts(): Promise<Product[]> {
 
 export async function getFeaturedProducts(): Promise<Product[]> {
   try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('featured', true);
+    const { data, error } = await withTimeout(
+      supabase.from('products').select('*').eq('featured', true)
+    );
     if (!error && data && data.length > 0) {
       return data.map(mapDbProduct);
     }
@@ -96,11 +105,9 @@ export async function getFeaturedProducts(): Promise<Product[]> {
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('slug', slug)
-      .maybeSingle();
+    const { data, error } = await withTimeout(
+      supabase.from('products').select('*').eq('slug', slug).maybeSingle()
+    );
     if (!error && data) {
       return mapDbProduct(data);
     }
@@ -122,7 +129,7 @@ export async function getSimilarProducts(productId: string, limit = 3): Promise<
 
 export async function getSuppliers(): Promise<Supplier[]> {
   try {
-    const { data, error } = await supabase.from('suppliers').select('*');
+    const { data, error } = await withTimeout(supabase.from('suppliers').select('*'));
     if (!error && data && data.length > 0) {
       return data.map(mapDbSupplier);
     }
@@ -134,11 +141,9 @@ export async function getSuppliers(): Promise<Supplier[]> {
 
 export async function getSupplierById(id: string): Promise<Supplier | null> {
   try {
-    const { data, error } = await supabase
-      .from('suppliers')
-      .select('*')
-      .eq('id', id)
-      .maybeSingle();
+    const { data, error } = await withTimeout(
+      supabase.from('suppliers').select('*').eq('id', id).maybeSingle()
+    );
     if (!error && data) {
       return mapDbSupplier(data);
     }
@@ -151,7 +156,7 @@ export async function getSupplierById(id: string): Promise<Supplier | null> {
 
 export async function getCategories(): Promise<Category[]> {
   try {
-    const { data, error } = await supabase.from('categories').select('*');
+    const { data, error } = await withTimeout(supabase.from('categories').select('*'));
     if (!error && data && data.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((c: any) => ({
@@ -171,7 +176,7 @@ export async function getCategories(): Promise<Category[]> {
 
 export async function getReviews(): Promise<Review[]> {
   try {
-    const { data, error } = await supabase.from('reviews').select('*');
+    const { data, error } = await withTimeout(supabase.from('reviews').select('*'));
     if (!error && data && data.length > 0) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       return data.map((r: any) => ({

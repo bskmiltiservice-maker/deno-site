@@ -1,12 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
 // Supabase credentials for project "site beno" (ID: gnlewlhthhricqqfhbzs)
+const env = typeof import.meta !== 'undefined' ? (import.meta as unknown as { env?: Record<string, string> }).env : undefined;
+
 export const SUPABASE_URL =
-  import.meta.env.VITE_SUPABASE_URL || 'https://gnlewlhthhricqqfhbzs.supabase.co';
+  env?.VITE_SUPABASE_URL || 'https://gnlewlhthhricqqfhbzs.supabase.co';
 
 export const SUPABASE_ANON_KEY =
-  import.meta.env.VITE_SUPABASE_ANON_KEY ||
-  'sb_publishable_y-vyVEAjFJALi6KZFIjbyA_Y4lu6LDZ';
+  env?.VITE_SUPABASE_ANON_KEY || 'sb_publishable_y-vyVEAjFJALi6KZFIjbyA_Y4lu6LDZ';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
