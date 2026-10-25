@@ -27,12 +27,18 @@ export async function checkSupabaseConnection(): Promise<{
     const { data, error } = await supabase.from('products').select('count', { count: 'exact', head: true });
     
     if (error) {
-      // 404 or relation does not exist means Supabase connection works, but tables are pending migration
-      if (error.code === '42P01' || error.message.includes('relation') || error.message.includes('does not exist')) {
+      // 404, PGRST205 or relation does not exist means Supabase connection works, but tables are pending migration
+      if (
+        error.code === '42P01' ||
+        error.code === 'PGRST205' ||
+        error.message.includes('relation') ||
+        error.message.includes('does not exist') ||
+        error.message.includes('schema cache')
+      ) {
         return {
           connected: true,
           hasTables: false,
-          message: 'Connecté à Supabase (Tables SQL à initialiser).',
+          message: 'Connecté avec succès à Supabase (Tables SQL à initialiser).',
         };
       }
       return {
